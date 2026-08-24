@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio</title>
+    <link href="{{url_for('static',path='Portfolio.css')}}" rel='stylesheet'>
+</head>
+<body>
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar">
+        <div class="logo">Portfolio</div>
+        <div class="nav-links">
+            <a href="mailto:naveenpalla2000@gmail.com" class="nav-link contact-link" title="Email">
+                <span class="contact-text">Email</span>
+            </a>
+            <a href="tel:+353894898683" class="nav-link contact-link" title="Phone">
+                <span class="contact-text">Call</span>
+            </a>
+            <a href="https://www.linkedin.com/in/pnaveen23/" target="_blank" class="nav-link contact-link" title="LinkedIn">
+                <span class="contact-text">LinkedIn</span>
+            </a>
+            <a href="https://github.com/PaNavar369" target="_blank" class="nav-link contact-link" title="GitHub">
+                <span class="contact-text">GitHub</span>
+            </a>
+            <a href="#" class="Admin-btn" id="adminBtn" onclick="showPasswordModal()">Admin</a>
+        </div>
+    </nav>
+
+    <!-- ===== PASSWORD MODAL ===== -->
+    <div id="passwordModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Enter Password</h3>
+                <span class="close-btn" onclick="closePasswordModal()">&times;</span>
+            </div>
+            <p>Please enter your password to access the admin panel.</p>
+            <input type="password" id="passwordInput" placeholder="Enter your password...">
+            <div id="passwordError" class="error-message" style="display:none;"></div>
+            <div class="modal-buttons">
+                <button class="modal-btn cancel-btn" onclick="closePasswordModal()">Cancel</button>
+                <button class="modal-btn login-btn" onclick="verifyPassword()">Login</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== ADMIN PANEL ===== -->
+    <div id="admin-panel" class="admin-panel" style="display:none;">
+        <div class="admin-content">
+            <div class="admin-buttons">
+                <!-- ✅ Added Edit Content Button -->
+                <button class="admin-btn primary" onclick="openContentEditor()">Edit Content</button>
+                <button class="admin-btn primary" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== CONTENT EDITOR MODAL ===== -->
+    <div id="contentEditorModal" class="upload-modal" style="display:none;">
+        <div class="upload-modal-content">
+            <div class="upload-modal-header">
+                <h2>Edit Page Content</h2>
+                <span class="close-upload-modal" onclick="closeContentEditor()">&times;</span>
+            </div>
+            <form id="contentForm">
+                <div class="form-group">
+                    <label for="contentKey">Section</label>
+                    <select id="contentKey" required>
+                        <option value="hero_title">Hero Title</option>
+                        <option value="hero_subtitle">Hero Subtitle</option>
+                        <option value="hero_description">Hero Description</option>
+                        <option value="footer_name">Footer Name</option>
+                        <option value="footer_title">Footer Title</option>
+                        <option value="footer_email">Footer Email</option>
+                        <option value="footer_phone">Footer Phone</option>
+                        <option value="footer_location">Footer Location</option>
+                        <option value="footer_copyright">Footer Copyright</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="contentValue">Content</label>
+                    <textarea id="contentValue" rows="5" placeholder="Enter content here..."></textarea>
+                </div>
+                <button type="submit" class="upload-submit-btn">Save Content</button>
+                <div id="contentUploadStatus" class="upload-status"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===== UPLOAD PROJECT MODAL ===== -->
+    <div id="uploadProjectModal" class="upload-modal" style="display:none;">
+        <div class="upload-modal-content">
+            <div class="upload-modal-header">
+                <h2 id="modalTitle">Upload Project</h2>
+                <span class="close-upload-modal" onclick="closeProjectModal()">&times;</span>
+            </div>
+            <form id="projectForm" enctype="multipart/form-data">
+                <input type="hidden" id="editProjectId" value="">
+                <div class="form-group">
+                    <label for="projectTitle">Project Title *</label>
+                    <input type="text" id="projectTitle" placeholder="e.g., Portfolio Website" required>
+                </div>
+                <div class="form-group">
+                    <label for="projectDescription">Description *</label>
+                    <textarea id="projectDescription" rows="3" placeholder="Brief description of your project..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="projectFile">Project Image / GIF / Architecture</label>
+                    <input type="file" id="projectFile" accept="image/*,image/gif,application/pdf">
+                    <small class="file-hint">Upload an image, GIF, or architecture diagram (PNG, JPG, GIF, PDF)</small>
+                </div>
+                <div class="form-group">
+                    <label for="projectTechnologies">Technologies (comma separated)</label>
+                    <input type="text" id="projectTechnologies" placeholder="e.g., Python, FastAPI, MongoDB">
+                </div>
+                <div class="form-group">
+                    <label for="projectGithub">GitHub Link</label>
+                    <input type="url" id="projectGithub" placeholder="https://github.com/username/repo">
+                </div>
+                <button type="submit" class="upload-submit-btn" id="submitProjectBtn">Upload Project</button>
+                <div id="projectUploadStatus" class="upload-status"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===== UPLOAD EDUCATION MODAL ===== -->
+    <div id="uploadEducationModal" class="upload-modal" style="display:none;">
+        <div class="upload-modal-content">
+            <div class="upload-modal-header">
+                <h2>Upload Education</h2>
+                <span class="close-upload-modal" onclick="closeEducationModal()">&times;</span>
+            </div>
+            <form id="educationForm">
+                <div class="form-group">
+                    <label for="eduInstitution">Institution Name *</label>
+                    <input type="text" id="eduInstitution" placeholder="e.g., Stanford University" required>
+                </div>
+                <div class="form-group">
+                    <label for="eduDegree">Degree / Program *</label>
+                    <input type="text" id="eduDegree" placeholder="e.g., MSc in Big Data Management" required>
+                </div>
+                <div class="form-group">
+                    <label for="eduStartYear">Start Year *</label>
+                    <input type="number" id="eduStartYear" placeholder="e.g., 2020" min="1990" max="2030" required>
+                </div>
+                <div class="form-group">
+                    <label for="eduEndYear">End Year *</label>
+                    <input type="number" id="eduEndYear" placeholder="e.g., 2022" min="1990" max="2030" required>
+                </div>
+                <div class="form-group">
+                    <label for="eduDescription">Description</label>
+                    <textarea id="eduDescription" rows="3" placeholder="Brief description of your education..."></textarea>
+                </div>
+                <button type="submit" class="upload-submit-btn">Upload Education</button>
+                <div id="eduUploadStatus" class="upload-status"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===== HERO SECTION ===== -->
+    <section class="hero" id="hero">
+        <!-- Profile Photo (Left Side) -->
+        <div class="image-container">
+            {% if profile_photo %}
+                <img src="/file/{{ profile_photo }}" alt="Profile Photo" class="profile-photo">
+            {% else %}
+                <img src="static/image.jpeg" alt="Naveen Palla - IT Professional">
+            {% endif %}
+            
+            <!-- Upload button (visible only when admin panel is enabled) -->
+            <div class="profile-actions" id="profileActions" style="display:none;">
+                <button class="upload-profile-btn" onclick="openProfileUpload()">Upload Photo</button>
+            </div>
+        </div>
+        
+        <!-- Description (Right Side) - ✅ DYNAMIC -->
+        <div class="description">
+            <h2 class="hero-subtitle">
+                {{ content.get('hero_subtitle', 'IT Professional | MSc in Big Data Management & Analytics') }}
+            </h2>
+            <p>
+                {{ content.get('hero_description', 'Data Techie and IT Professional with a Master\'s degree in Big Data Management & Analytics. Specializing in building scalable data pipelines, cloud-native architectures, and Full-Stack Development, I bridge the gap between raw data and business intelligence. Passionate about transforming complex data into actionable insights using Python, Spark, and modern cloud platforms.') }}
+            </p>
+        </div>
+    </section>
+
+    <!-- ===== UPLOAD PROFILE PHOTO MODAL ===== -->
+    <div id="uploadProfileModal" class="upload-modal" style="display:none;">
+        <div class="upload-modal-content">
+            <div class="upload-modal-header">
+                <h2>Upload Profile Photo</h2>
+                <span class="close-upload-modal" onclick="closeProfileModal()">&times;</span>
+            </div>
+            <form id="profilePhotoForm" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="profilePhotoInput">Choose Photo</label>
+                    <input type="file" id="profilePhotoInput" accept="image/*" required>
+                    <small class="file-hint">Upload a profile picture (JPG, PNG, GIF, WEBP)</small>
+                </div>
+                <button type="submit" class="upload-submit-btn">Upload Photo</button>
+                <div id="profileUploadStatus" class="upload-status"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <section class="main-container">
+        <div class="projects-section" id="projects">
+            <div class="section-header">
+                <h2>Projects</h2>
+                <button class="add-btn" id="newProjectBtn" onclick="uploadProject()" style="display:none;">+ New Project</button>
+            </div>
+
+            {% if projects %}
+                <div class="projects-grid">
+                    {% for project in projects %}
+                        <div class="project-card"
+                            onclick="openProjectDetail(this)"
+                            data-project-id="{{ project.id }}"
+                            data-title="{{ project.title }}"
+                            data-description="{{ project.description }}"
+                            data-technologies="{{ project.technologies|join(',') if project.technologies else '' }}"
+                            data-github="{{ project.github_link or '' }}"
+                            data-file-id="{{ project.file_id or '' }}"
+                            data-file-type="{{ project.file_type or '' }}">
+
+                            {% if project.file_id %}
+                                {% if project.file_type == 'image' %}
+                                    <img src="/file/{{ project.file_id }}" alt="{{ project.title }}" class="project-image">
+                                {% elif project.file_type == 'gif' %}
+                                    <img src="/file/{{ project.file_id }}" alt="{{ project.title }} demo" class="project-gif">
+                                {% elif project.file_type == 'pdf' %}
+                                    <div class="project-pdf">
+                                        <span class="pdf-link">📄 Architecture Diagram</span>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+
+                            <h3>{{ project.title }}</h3>
+                            <p class="project-description">{{ project.description }}</p>
+
+                            <div class="project-actions" style="display:none;">
+                                <button class="edit-btn" onclick="event.stopPropagation(); editProject(this)">Edit</button>
+                                <button class="delete-btn" onclick="event.stopPropagation(); deleteProject('{{ project.id }}')">Delete</button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- ===== PROJECT DETAIL MODAL (expanded view) ===== -->
+                <div id="projectDetailModal" class="project-detail-modal">
+                    <div class="project-detail-content">
+                        <div class="project-detail-header">
+                            <h2 id="detailTitle"></h2>
+                            <span class="close-project-detail" onclick="closeProjectDetail()">&times;</span>
+                        </div>
+                        <div id="detailImageWrap"></div>
+                        <p class="project-detail-description" id="detailDescription"></p>
+                        <div class="project-tags" id="detailTags" style="display:flex;"></div>
+                        <div class="project-links" id="detailLinks" style="display:flex;"></div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <p class="empty-message">No projects added yet.</p>
+        {% endif %}
+    </div>
+
+    <div class="education-background" id="education">
+        <div class="section-header">
+            <h2>Education</h2>
+            <button class="add-btn" id="newEducationBtn" onclick="uploadEducation()" style="display:none;">+ New Education</button>
+        </div>
+        
+        {% if education %}
+            {% for edu in education %}
+                <div class="education-card">
+                    <h3>{{ edu.degree }}</h3>
+                    <p class="institution">{{ edu.institution }}</p>
+                    <p class="year">{{ edu.start_year }} - {{ edu.end_year }}</p>
+                    {% if edu.description %}
+                        <p class="description">{{ edu.description }}</p>
+                    {% endif %}
+                    <div class="education-actions" style="display:none;">
+                        <button class="delete-btn" onclick="deleteEducation('{{ edu.id }}')">Delete</button>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="empty-message">No education added yet.</p>
+        {% endif %}
+    </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer" id="contact">
+    <div class="footer-content">
+        <div class="footer-section">
+            <h3>{{ content.get('footer_name', 'Naveen Palla') }}</h3>
+            <p class="footer-title">{{ content.get('footer_title', 'IT Professional | MSc in Big Data Management & Analytics') }}</p>
+        </div>
+        <div class="footer-section">
+            <h4>Contact</h4>
+            <div class="footer-contact">
+                <div class="contact-item">
+                    <span class="contact-icon">📧</span>
+                    <a href="mailto:{{ content.get('footer_email', 'naveenpalla2000@gmail.com') }}">
+                        {{ content.get('footer_email', 'naveenpalla2000@gmail.com') }}
+                    </a>
+                </div>
+                <div class="contact-item">
+                    <span class="contact-icon">📱</span>
+                    <a href="tel:{{ content.get('footer_phone', '+353894898683') }}">
+                        {{ content.get('footer_phone', '+353 894898683') }}
+                    </a>
+                </div>
+                <div class="contact-item">
+                    <span class="contact-icon">📍</span>
+                    <span>{{ content.get('footer_location', 'Dublin, Ireland') }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="footer-section">
+            <h4>Connect</h4>
+            <div class="footer-social">
+                <a href="https://www.linkedin.com/in/pnaveen23/" target="_blank" class="social-link">LinkedIn</a>
+                <a href="https://github.com/PaNavar369" target="_blank" class="social-link">GitHub</a>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>{{ content.get('footer_copyright', '© 2024 Naveen Palla. All rights reserved.') }}</p>
+    </div>
+</footer>
+
+<!-- ============================================================ -->
+<!-- JAVASCRIPT                                                    -->
+<!-- ============================================================ -->
+<script>
+    // ============================================================ //
+    // GLOBAL VARIABLES                                              //
+    // ============================================================ //
+    let editingProjectId = null;
+
+    // ============================================================ //
+    // PASSWORD MODAL FUNCTIONS                                     //
+    // ============================================================ //
+    
+    function showPasswordModal() {
+        if (sessionStorage.getItem('isAdmin') === 'true') {
+            document.getElementById('admin-panel').style.display = 'block';
+            showAdminButtons();
+            return;
+        }
+        
+        document.getElementById('passwordModal').style.display = 'flex';
+        document.getElementById('passwordInput').value = '';
+        document.getElementById('passwordError').style.display = 'none';
+        document.getElementById('passwordInput').focus();
+    }
+
+    function closePasswordModal() {
+        document.getElementById('passwordModal').style.display = 'none';
+        document.getElementById('passwordError').style.display = 'none';
+    }
+
+    window.addEventListener('click', function(e) {
+        const modal = document.getElementById('passwordModal');
+        if (e.target === modal) {
+            closePasswordModal();
+        }
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closePasswordModal();
+        }
+    });
+
+    document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            verifyPassword();
+        }
+    });
+
+    // ============================================================ //
+    // SHOW/HIDE ADMIN BUTTONS                                      //
+    // ============================================================ //
+    function showAdminButtons() {
+        // Show profile actions (upload photo)
+        const profileActions = document.getElementById('profileActions');
+        if (profileActions) {
+            profileActions.style.display = 'flex';
+            profileActions.classList.add('show');
+        }
+
+        // Show add buttons
+        const projectBtn = document.getElementById('newProjectBtn');
+        if (projectBtn) {
+            projectBtn.style.display = 'inline-block';
+            projectBtn.style.visibility = 'visible';
+        }
+        
+        const eduBtn = document.getElementById('newEducationBtn');
+        if (eduBtn) {
+            eduBtn.style.display = 'inline-block';
+            eduBtn.style.visibility = 'visible';
+        }
+        
+        // Show action buttons
+        document.querySelectorAll('.project-actions, .education-actions').forEach(function(el) {
+            el.style.display = 'flex';
+            el.style.visibility = 'visible';
+        });
+    }
+
+    function hideAdminButtons() {
+        // Hide profile actions
+        const profileActions = document.getElementById('profileActions');
+        if (profileActions) {
+            profileActions.style.display = 'none';
+            profileActions.classList.remove('show');
+        }
+
+        // Hide add buttons
+        const projectBtn = document.getElementById('newProjectBtn');
+        if (projectBtn) {
+            projectBtn.style.display = 'none';
+            projectBtn.style.visibility = 'hidden';
+        }
+        
+        const eduBtn = document.getElementById('newEducationBtn');
+        if (eduBtn) {
+            eduBtn.style.display = 'none';
+            eduBtn.style.visibility = 'hidden';
+        }
+        
+        // Hide action buttons
+        document.querySelectorAll('.project-actions, .education-actions').forEach(function(el) {
+            el.style.display = 'none';
+            el.style.visibility = 'hidden';
+        });
+    }
+
+    // ============================================================ //
+    // VERIFY PASSWORD                                               //
+    // ============================================================ //
+    async function verifyPassword() {
+        const password = document.getElementById('passwordInput').value.trim();
+        const errorDiv = document.getElementById('passwordError');
+        
+        if (!password) {
+            errorDiv.textContent = 'Please enter your password.';
+            errorDiv.style.display = 'block';
+            return;
+        }
+
+        const loginBtn = document.querySelector('.login-btn');
+        loginBtn.disabled = true;
+        loginBtn.textContent = 'Verifying...';
+
+        try {
+            const formData = new FormData();
+            formData.append('password', password);
+
+            const response = await fetch('/login', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                sessionStorage.setItem('isAdmin', 'true');
+                closePasswordModal();
+                
+                document.getElementById('admin-panel').style.display = 'block';
+                showAdminButtons();
+                document.getElementById('adminBtn').textContent = 'Admin';
+                
+            } else {
+                errorDiv.textContent = 'Sorry, you might not be the owner. Redirecting...';
+                errorDiv.style.display = 'block';
+                
+                document.getElementById('passwordInput').disabled = true;
+                
+                setTimeout(function() {
+                    window.location.href = '/';
+                }, 2000);
+            }
+
+        } catch (error) {
+            console.error('Login error:', error);
+            errorDiv.textContent = 'Network error. Please try again.';
+            errorDiv.style.display = 'block';
+        } finally {
+            loginBtn.disabled = false;
+            loginBtn.textContent = 'Login';
+        }
+    }
+
+    // ============================================================ //
+    // CHECK LOGIN STATE ON PAGE LOAD                                //
+    // ============================================================ //
+    window.addEventListener("DOMContentLoaded", function() {
+        console.log('Page loaded');
+        const isAdmin = sessionStorage.getItem('isAdmin');
+        console.log('isAdmin from sessionStorage:', isAdmin);
+
+        if (isAdmin === 'true') {
+            document.getElementById('admin-panel').style.display = 'block';
+            showAdminButtons();
+            console.log('✅ Admin panel shown');
+        } else {
+            document.getElementById('admin-panel').style.display = 'none';
+            hideAdminButtons();
+            console.log('❌ Admin panel hidden');
+        }
+    });
+
+    // ============================================================ //
+    // LOGOUT                                                        //
+    // ============================================================ //
+    function logout() {
+        console.log('Logging out...');
+        document.getElementById('admin-panel').style.display = 'none';
+        document.getElementById('adminBtn').textContent = 'Admin';
+        sessionStorage.removeItem('isAdmin');
+        
+        hideAdminButtons();
+        
+        window.location.href = '/';
+    }
+
+    // ============================================================ //
+    // CONTENT EDITOR FUNCTIONS                                     //
+    // ============================================================ //
+    
+    function openContentEditor() {
+        console.log("Opening content editor");
+        
+        document.getElementById('contentForm').reset();
+        document.getElementById('contentUploadStatus').className = 'upload-status';
+        document.getElementById('contentUploadStatus').textContent = '';
+        document.getElementById('contentUploadStatus').style.display = 'none';
+        
+        document.getElementById('contentEditorModal').style.display = 'flex';
+        
+        // Load content for the first option
+        const keyField = document.getElementById('contentKey');
+        if (keyField) {
+            setTimeout(() => {
+                keyField.dispatchEvent(new Event('change'));
+            }, 100);
+        }
+    }
+
+    function closeContentEditor() {
+        document.getElementById('contentEditorModal').style.display = 'none';
+    }
+
+    // Load content when section changes
+    document.getElementById('contentKey').addEventListener('change', async function() {
+        const key = this.value;
+        const valueField = document.getElementById('contentValue');
+        
+        try {
+            const response = await fetch('/get-content/' + key);
+            const data = await response.json();
+            if (data.success) {
+                valueField.value = data.value || '';
+            } else {
+                valueField.value = '';
+            }
+        } catch (error) {
+            console.error('Error loading content:', error);
+            valueField.value = '';
+        }
+    });
+
+    // Handle content form submission
+    document.addEventListener('DOMContentLoaded', function() {
+        const contentForm = document.getElementById("contentForm");
+        const statusDiv = document.getElementById("contentUploadStatus");
+
+        if (contentForm) {
+            contentForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                const submitBtn = this.querySelector('.upload-submit-btn');
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Saving...';
+
+                statusDiv.className = 'upload-status';
+                statusDiv.textContent = '';
+                statusDiv.style.display = 'none';
+
+                const key = document.getElementById('contentKey').value;
+                const value = document.getElementById('contentValue').value.trim();
+
+                if (!value) {
+                    statusDiv.className = 'upload-status error';
+                    statusDiv.textContent = 'Please enter content.';
+                    statusDiv.style.display = 'block';
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Save Content';
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('key', key);
+                formData.append('value', value);
+
+                try {
+                    const response = await fetch('/update-content', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        statusDiv.className = 'upload-status success';
+                        statusDiv.textContent = data.message;
+                        statusDiv.style.display = 'block';
+
+                        setTimeout(() => {
+                            statusDiv.textContent = '';
+                            statusDiv.style.display = 'none';
+                            closeContentEditor();
+                            window.location.reload();
+                        }, 1500);
+
+                    } else {
+                        statusDiv.className = 'upload-status error';
+                        statusDiv.textContent = data.message || 'Save failed';
+                        statusDiv.style.display = 'block';
+                    }
+
+                } catch (error) {
+                    console.error('Save error:', error);
+                    statusDiv.className = 'upload-status error';
+                    statusDiv.textContent = 'Network error: ' + error.message;
+                    statusDiv.style.display = 'block';
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Save Content';
+                }
+            });
+        }
+    });
+
+    // Close content editor on outside click
+    window.addEventListener('click', function(e) {
+        const modal = document.getElementById('contentEditorModal');
+        if (e.target === modal) {
+            closeContentEditor();
+        }
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('contentEditorModal');
+            if (modal && modal.style.display === 'flex') {
+                closeContentEditor();
+            }
+        }
+    });
+
+    // ============================================================ //
+    // PROJECT FUNCTIONS                                             //
+    // ============================================================ //
+    
+    function uploadProject() {
+        console.log("Upload Project clicked");
+        
+        editingProjectId = null;
+        document.getElementById('editProjectId').value = '';
+        
+        const form = document.getElementById("projectForm");
+        if (form) {
+            form.reset();
+        }
+        
+        const fileInput = document.getElementById('projectFile');
+        if (fileInput) {
+            fileInput.value = '';
+            fileInput.required = true;
+        }
+        
+        document.getElementById('modalTitle').textContent = 'Upload Project';
+        document.getElementById('submitProjectBtn').textContent = 'Upload Project';
+        
+        const statusDiv = document.getElementById("projectUploadStatus");
+        if (statusDiv) {
+            statusDiv.className = 'upload-status';
+            statusDiv.textContent = '';
+            statusDiv.style.display = 'none';
+        }
+        
+        const modal = document.getElementById('uploadProjectModal');
+        if (modal) {
+            modal.style.display = 'flex';
+            console.log('Project modal shown');
+        }
+    }
+
+    function closeProjectModal() {
+        const modal = document.getElementById('uploadProjectModal');
+        if (modal) {
+            modal.style.display = 'none';
+            console.log('Project modal closed');
+        }
+        editingProjectId = null;
+        document.getElementById('editProjectId').value = '';
+    }
+
+    // ============================================================ //
+    // EDIT PROJECT                                                  //
+    // ============================================================ //
+    function editProject(btn) {
+        console.log("Edit button clicked");
+        
+        let card = btn.closest('.project-card');
+        if (!card) {
+            console.error("No project card found");
+            return;
+        }
+        
+        const projectId = card.dataset.projectId;
+        if (!projectId) {
+            console.error("No project ID found");
+            alert("Error: Could not identify project to edit");
+            return;
+        }
+        
+        editingProjectId = projectId;
+        document.getElementById('editProjectId').value = projectId;
+        console.log("Editing project ID:", editingProjectId);
+        
+        const title = card.dataset.title || '';
+        const description = card.dataset.description || '';
+        const technologies = card.dataset.technologies || '';
+        const github = card.dataset.github || '';
+        
+        document.getElementById('projectTitle').value = title;
+        document.getElementById('projectDescription').value = description;
+        document.getElementById('projectTechnologies').value = technologies;
+        document.getElementById('projectGithub').value = github;
+        
+        document.getElementById('projectFile').required = false;
+        
+        document.getElementById('modalTitle').textContent = 'Edit Project';
+        document.getElementById('submitProjectBtn').textContent = 'Save Changes';
+        
+        const statusDiv = document.getElementById("projectUploadStatus");
+        if (statusDiv) {
+            statusDiv.className = 'upload-status';
+            statusDiv.textContent = '';
+            statusDiv.style.display = 'none';
+        }
+        
+        document.getElementById('uploadProjectModal').style.display = 'flex';
+        console.log('Edit modal opened for project:', editingProjectId);
+    }
+
+    // ============================================================ //
+    // DELETE PROJECT                                                //
+    // ============================================================ //
+    function deleteProject(id) {
+        if (confirm('Are you sure you want to delete this project?')) {
+            console.log('Deleting project:', id);
+            
+            fetch('/delete-project/' + id, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(data.message || 'Server error');
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    alert('Project deleted successfully!');
+                    window.location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Network error. Please try again.');
+            });
+        }
+    }
+
+    // ============================================================ //
+    // PROJECT FORM SUBMISSION                                       //
+    // ============================================================ //
+    document.addEventListener('DOMContentLoaded', function() {
+        const projectForm = document.getElementById("projectForm");
+        const statusDiv = document.getElementById("projectUploadStatus");
+
+        if (projectForm) {
+            projectForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                const submitBtn = document.getElementById('submitProjectBtn');
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Saving...';
+
+                statusDiv.className = 'upload-status';
+                statusDiv.textContent = '';
+                statusDiv.style.display = 'none';
+
+                const title = document.getElementById('projectTitle').value.trim();
+                const description = document.getElementById('projectDescription').value.trim();
+                const technologies = document.getElementById('projectTechnologies').value.trim();
+                const github_link = document.getElementById('projectGithub').value.trim();
+                const fileInput = document.getElementById('projectFile');
+                const projectId = document.getElementById('editProjectId').value;
+
+                if (!title || !description) {
+                    statusDiv.className = 'upload-status error';
+                    statusDiv.textContent = 'Please fill in Title and Description (*)';
+                    statusDiv.style.display = 'block';
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = projectId ? 'Save Changes' : 'Upload Project';
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('title', title);
+                formData.append('description', description);
+                
+                if (fileInput && fileInput.files.length > 0) {
+                    const file = fileInput.files[0];
+                    if (file.size > 10 * 1024 * 1024) {
+                        statusDiv.className = 'upload-status error';
+                        statusDiv.textContent = 'File size must be less than 10MB';
+                        statusDiv.style.display = 'block';
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = projectId ? 'Save Changes' : 'Upload Project';
+                        return;
+                    }
+                    formData.append('file', file);
+                }
+                
+                formData.append('technologies', technologies);
+                formData.append('github_link', github_link);
+
+                const isEditing = !!projectId;
+                const url = isEditing ? ('/update-project/' + projectId) : '/upload-project';
+                const method = isEditing ? 'PUT' : 'POST';
+
+                try {
+                    const response = await fetch(url, {
+                        method: method,
+                        body: formData
+                    });
+                    
+                    const data = await response.json();
+
+                    if (data.success) {
+                        statusDiv.className = 'upload-status success';
+                        statusDiv.textContent = data.message;
+                        statusDiv.style.display = 'block';
+
+                        setTimeout(() => {
+                            projectForm.reset();
+                            statusDiv.textContent = '';
+                            statusDiv.style.display = 'none';
+                            closeProjectModal();
+                            window.location.reload();
+                        }, 1500);
+
+                    } else {
+                        statusDiv.className = 'upload-status error';
+                        statusDiv.textContent = data.message || 'Operation failed';
+                        statusDiv.style.display = 'block';
+                    }
+
+                } catch (error) {
+                    console.error('Error:', error);
+                    statusDiv.className = 'upload-status error';
+                    statusDiv.textContent = 'Network error: ' + error.message;
+                    statusDiv.style.display = 'block';
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = projectId ? 'Save Changes' : 'Upload Project';
+                }
+            });
+        }
+    });
+
+    // ============================================================ //
+    // CLOSE PROJECT MODAL ON OUTSIDE CLICK & ESC                   //
+    // ============================================================ //
+    window.addEventListener('click', function(e) {
+        const projectModal = document.getElementById('uploadProjectModal');
+        if (e.target === projectModal) {
+            closeProjectModal();
+        }
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const projectModal = document.getElementById('uploadProjectModal');
+            if (projectModal && projectModal.style.display === 'flex') {
+                closeProjectModal();
+            }
+        }
+    });
+
+    // ============================================================ //
+    // PROFILE PHOTO FUNCTIONS                                      //
+    // ============================================================ //
+    function openProfileUpload() {
+        document.getElementById('profilePhotoForm').reset();
+        document.getElementById('profileUploadStatus').className = 'upload-status';
+        document.getElementById('profileUploadStatus').textContent = '';
+        document.getElementById('profileUploadStatus').style.display = 'none';
+        document.getElementById('uploadProfileModal').style.display = 'flex';
+    }
+
+    function closeProfileModal() {
+        document.getElementById('uploadProfileModal').style.display = 'none';
+    }
+
+    // ============================================================ //
+    // PROFILE PHOTO FORM SUBMISSION                                 //
+    // ============================================================ //
+    document.addEventListener('DOMContentLoaded', function() {
+        const profileForm = document.getElementById("profilePhotoForm");
+        const statusDiv = document.getElementById("profileUploadStatus");
+
+        if (profileForm) {
+            profileForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                const submitBtn = this.querySelector('.upload-submit-btn');
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Uploading...';
+
+                statusDiv.className = 'upload-status';
+                statusDiv.textContent = '';
+                statusDiv.style.display = 'none';
+
+                const fileInput = document.getElementById('profilePhotoInput');
+                
+                if (!fileInput.files || fileInput.files.length === 0) {
+                    statusDiv.className = 'upload-status error';
+                    statusDiv.textContent = 'Please select a photo.';
+                    statusDiv.style.display = 'block';
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Upload Photo';
+                    return;
+                }
+
+                const file = fileInput.files[0];
+                if (file.size > 5 * 1024 * 1024) {
+                    statusDiv.className = 'upload-status error';
+                    statusDiv.textContent = 'File size must be less than 5MB.';
+                    statusDiv.style.display = 'block';
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Upload Photo';
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('file', file);
+
+                try {
+                    const response = await fetch('/upload-profile-photo', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        statusDiv.className = 'upload-status success';
+                        statusDiv.textContent = data.message;
+                        statusDiv.style.display = 'block';
+
+                        setTimeout(() => {
+                            profileForm.reset();
+                            statusDiv.textContent = '';
+                            statusDiv.style.display = 'none';
+                            closeProfileModal();
+                            window.location.reload();
+                        }, 1500);
+
+                    } else {
+                        statusDiv.className = 'upload-status error';
+                        statusDiv.textContent = data.message || 'Upload failed';
+                        statusDiv.style.display = 'block';
+                    }
+
+                } catch (error) {
+                    console.error('Upload error:', error);
+                    statusDiv.className = 'upload-status error';
+                    statusDiv.textContent = 'Network error: ' + error.message;
+                    statusDiv.style.display = 'block';
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Upload Photo';
+                }
+            });
+        }
+    });
+
+    // ============================================================ //
+    // OTHER ADMIN FUNCTIONS                                         //
+    // ============================================================ //
+    function uploadCertificate() {
+        alert('Upload Certificate - Coming soon!');
+    }
+
+    function uploadEducation() {
+        console.log("Upload Education clicked");
+
+        const form = document.getElementById("educationForm");
+        if (form) {
+            form.reset();
+        }
+
+        const statusDiv = document.getElementById("eduUploadStatus");
+        if (statusDiv) {
+            statusDiv.className = 'upload-status';
+            statusDiv.textContent = '';
+            statusDiv.style.display = 'none';
+        }
+
+        const modal = document.getElementById('uploadEducationModal');
+        if (modal) {
+            modal.style.display = 'flex';
+            console.log('Education modal shown');
+        }
+    }
+
+    function closeEducationModal() {
+        const modal = document.getElementById('uploadEducationModal');
+        if (modal) {
+            modal.style.display = 'none';
+            console.log('Education modal closed');
+        }
+    }
+
+    function deleteEducation(id) {
+        if (confirm('Are you sure you want to delete this education entry?')) {
+            fetch('/delete-education/' + id, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Education deleted successfully!');
+                    window.location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Network error. Please try again.');
+            });
+        }
+    }
+
+    // Close education modal on outside click and ESC
+    window.addEventListener('click', function(e) {
+        const eduModal = document.getElementById('uploadEducationModal');
+        if (e.target === eduModal) {
+            closeEducationModal();
+        }
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const eduModal = document.getElementById('uploadEducationModal');
+            if (eduModal && eduModal.style.display === 'flex') {
+                closeEducationModal();
+            }
+        }
+    });
+
+    // Handle education form submission
+    document.addEventListener('DOMContentLoaded', function() {
+        const educationForm = document.getElementById("educationForm");
+        const statusDiv = document.getElementById("eduUploadStatus");
+
+        if (educationForm) {
+            educationForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                const submitBtn = this.querySelector('.upload-submit-btn');
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Uploading...';
+
+                statusDiv.className = 'upload-status';
+                statusDiv.textContent = '';
+                statusDiv.style.display = 'none';
+
+                const institution = document.getElementById('eduInstitution').value.trim();
+                const degree = document.getElementById('eduDegree').value.trim();
+                const start_year = parseInt(document.getElementById('eduStartYear').value);
+                const end_year = parseInt(document.getElementById('eduEndYear').value);
+                const description = document.getElementById('eduDescription').value.trim();
+
+                if (!institution || !degree || !start_year || !end_year) {
+                    statusDiv.className = 'upload-status error';
+                    statusDiv.textContent = 'Please fill in all required fields (*)';
+                    statusDiv.style.display = 'block';
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Upload Education';
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('institution', institution);
+                formData.append('degree', degree);
+                formData.append('start_year', start_year);
+                formData.append('end_year', end_year);
+                formData.append('description', description);
+
+                try {
+                    const response = await fetch('/upload-education', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        statusDiv.className = 'upload-status success';
+                        statusDiv.textContent = data.message;
+                        statusDiv.style.display = 'block';
+
+                        setTimeout(() => {
+                            educationForm.reset();
+                            statusDiv.textContent = '';
+                            statusDiv.style.display = 'none';
+                            closeEducationModal();
+                            window.location.reload();
+                        }, 1500);
+
+                    } else {
+                        statusDiv.className = 'upload-status error';
+                        statusDiv.textContent = data.message;
+                        statusDiv.style.display = 'block';
+                    }
+
+                } catch (error) {
+                    console.error('Upload error:', error);
+                    statusDiv.className = 'upload-status error';
+                    statusDiv.textContent = 'Network error: ' + error.message;
+                    statusDiv.style.display = 'block';
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Upload Education';
+                }
+            });
+        }
+    });
+
+    // ============================================================ //
+    // PROJECT DETAIL MODAL                                          //
+    // ============================================================ //
+    function openProjectDetail(card) {
+        const title = card.dataset.title;
+        const description = card.dataset.description;
+        const technologies = card.dataset.technologies;
+        const github = card.dataset.github;
+        const fileId = card.dataset.fileId;
+        const fileType = card.dataset.fileType;
+
+        document.getElementById('detailTitle').textContent = title;
+        document.getElementById('detailDescription').textContent = description;
+
+        const imgWrap = document.getElementById('detailImageWrap');
+        imgWrap.innerHTML = '';
+        if (fileId && (fileType === 'image' || fileType === 'gif')) {
+            const img = document.createElement('img');
+            img.src = '/file/' + fileId;
+            img.alt = title;
+            img.className = 'project-detail-image';
+            imgWrap.appendChild(img);
+        } else if (fileId && fileType === 'pdf') {
+            imgWrap.innerHTML = '<div class="project-pdf"><a href="/file/' + fileId + '" target="_blank" class="pdf-link">View Architecture Diagram (PDF)</a></div>';
+        }
+
+        const tagsDiv = document.getElementById('detailTags');
+        tagsDiv.innerHTML = '';
+        if (technologies) {
+            technologies.split(',').map(t => t.trim()).filter(Boolean).forEach(tech => {
+                const span = document.createElement('span');
+                span.className = 'project-tag';
+                span.textContent = tech;
+                tagsDiv.appendChild(span);
+            });
+        }
+
+        const linksDiv = document.getElementById('detailLinks');
+        linksDiv.innerHTML = '';
+        if (github) {
+            const a = document.createElement('a');
+            a.href = github;
+            a.target = '_blank';
+            a.className = 'project-link';
+            a.textContent = 'GitHub';
+            linksDiv.appendChild(a);
+        }
+
+        document.getElementById('projectDetailModal').classList.add('show');
+    }
+
+    function closeProjectDetail() {
+        document.getElementById('projectDetailModal').classList.remove('show');
+    }
+
+    window.addEventListener('click', function(e) {
+        const modal = document.getElementById('projectDetailModal');
+        if (e.target === modal) closeProjectDetail();
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeProjectDetail();
+    });
+
+    // Close profile modal on outside click
+    window.addEventListener('click', function(e) {
+        const modal = document.getElementById('uploadProfileModal');
+        if (e.target === modal) {
+            closeProfileModal();
+        }
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('uploadProfileModal');
+            if (modal && modal.style.display === 'flex') {
+                closeProfileModal();
+            }
+        }
+    });
+
+    console.log('Portfolio JavaScript loaded');
+</script>
+</body>
+</html>
