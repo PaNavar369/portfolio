@@ -4,343 +4,429 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portfolio</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Your Custom CSS -->
     <link href="{{url_for('static',path='portfolio.css')}}" rel='stylesheet'>
 </head>
 <body>
     <!-- ===== NAVBAR ===== -->
-    <nav class="navbar">
-        <div class="logo">Portfolio</div>
-        <div class="nav-links">
-            <a href="mailto:naveenpalla2000@gmail.com" class="nav-link contact-link" title="Email">
-                <span class="contact-text">Email</span>
-            </a>
-            <a href="tel:+353894898683" class="nav-link contact-link" title="Phone">
-                <span class="contact-text">Call</span>
-            </a>
-            <a href="https://www.linkedin.com/in/pnaveen23/" target="_blank" class="nav-link contact-link" title="LinkedIn">
-                <span class="contact-text">LinkedIn</span>
-            </a>
-            <a href="https://github.com/PaNavar369" target="_blank" class="nav-link contact-link" title="GitHub">
-                <span class="contact-text">GitHub</span>
-            </a>
-            <a href="#" class="Admin-btn" id="adminBtn" onclick="showPasswordModal()">Admin</a>
+    <nav class="navbar sticky-top" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 0.3rem 1rem;">
+        <div class="container-fluid">
+            <div class="d-flex align-items-center justify-content-between w-100">
+                <a class="navbar-brand text-white fw-bold" href="#" style="font-size: 1.2rem;">Portfolio</a>
+                
+                <div class="d-flex align-items-center gap-2 gap-md-3">
+                    <a href="mailto:naveenpalla2000@gmail.com" class="nav-link text-white-50 hover-text-white" style="font-size: 0.85rem;">Email</a>
+                    <a href="tel:+353894898683" class="nav-link text-white-50 hover-text-white" style="font-size: 0.85rem;">Call</a>
+                    <a href="https://www.linkedin.com/in/pnaveen23/" target="_blank" class="nav-link text-white-50 hover-text-white" style="font-size: 0.85rem;">LinkedIn</a>
+                    <a href="https://github.com/PaNavar369" target="_blank" class="nav-link text-white-50 hover-text-white" style="font-size: 0.85rem;">GitHub</a>
+                    <a href="#" class="btn btn-outline-light btn-sm rounded-pill px-3 py-1" onclick="showPasswordModal()" style="font-size: 0.8rem;">Admin</a>
+                </div>
+            </div>
         </div>
     </nav>
 
     <!-- ===== PASSWORD MODAL ===== -->
-    <div id="passwordModal" class="modal" style="display:none;">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Enter Password</h3>
-                <span class="close-btn" onclick="closePasswordModal()">&times;</span>
-            </div>
-            <p>Please enter your password to access the admin panel.</p>
-            <input type="password" id="passwordInput" placeholder="Enter your password...">
-            <div id="passwordError" class="error-message" style="display:none;"></div>
-            <div class="modal-buttons">
-                <button class="modal-btn cancel-btn" onclick="closePasswordModal()">Cancel</button>
-                <button class="modal-btn login-btn" onclick="verifyPassword()">Login</button>
+    <div id="passwordModal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Enter Password</h5>
+                    <button type="button" class="btn-close" onclick="closePasswordModal()"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted">Please enter your password to access the admin panel.</p>
+                    <input type="password" id="passwordInput" class="form-control" placeholder="Enter your password...">
+                    <div id="passwordError" class="alert alert-danger mt-2" style="display:none;"></div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closePasswordModal()">Cancel</button>
+                    <button class="btn btn-primary" onclick="verifyPassword()">Login</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- ===== ADMIN PANEL ===== -->
-    <div id="admin-panel" class="admin-panel" style="display:none;">
-        <div class="admin-content">
-            <div class="admin-buttons">
-                <!-- ✅ Added Edit Content Button -->
-                <button class="admin-btn primary" onclick="openContentEditor()">Edit Content</button>
-                <button class="admin-btn primary" onclick="logout()">Logout</button>
+    <!-- ===== ADMIN PANEL (Hidden by default) ===== -->
+    <div id="adminPanel" class="admin-panel" style="display:none;">
+        <div class="container-fluid">
+            <div class="d-flex flex-wrap justify-content-center gap-2 py-2">
+                <button class="btn btn-outline-light btn-sm" onclick="openContentEditor()">Edit Content</button>
+                <button class="btn btn-outline-danger btn-sm" onclick="logout()">Logout</button>
             </div>
         </div>
     </div>
 
     <!-- ===== CONTENT EDITOR MODAL ===== -->
-    <div id="contentEditorModal" class="upload-modal" style="display:none;">
-        <div class="upload-modal-content">
-            <div class="upload-modal-header">
-                <h2>Edit Page Content</h2>
-                <span class="close-upload-modal" onclick="closeContentEditor()">&times;</span>
+    <div id="contentEditorModal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Page Content</h5>
+                    <button type="button" class="btn-close" onclick="closeContentEditor()"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="contentForm">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Section</label>
+                            <select id="contentKey" class="form-select" required>
+                                <optgroup label="Hero Section">
+                                    <option value="hero_title">Hero Title</option>
+                                    <option value="hero_subtitle">Hero Subtitle</option>
+                                    <option value="hero_description">Hero Description</option>
+                                </optgroup>
+                                <optgroup label="Footer Section">
+                                    <option value="footer_name">Footer Name</option>
+                                    <option value="footer_title">Footer Title</option>
+                                    <option value="footer_email">Footer Email</option>
+                                    <option value="footer_phone">Footer Phone</option>
+                                    <option value="footer_location">Footer Location</option>
+                                    <option value="footer_copyright">Footer Copyright</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Content</label>
+                            <textarea id="contentValue" class="form-control" rows="5" placeholder="Enter content here..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Save Content</button>
+                        <div id="contentUploadStatus" class="mt-2"></div>
+                    </form>
+                </div>
             </div>
-            <form id="contentForm">
-                <div class="form-group">
-                    <label for="contentKey">Section</label>
-                    <select id="contentKey" required>
-                        <option value="hero_title">Hero Title</option>
-                        <option value="hero_subtitle">Hero Subtitle</option>
-                        <option value="hero_description">Hero Description</option>
-                        <option value="footer_name">Footer Name</option>
-                        <option value="footer_title">Footer Title</option>
-                        <option value="footer_email">Footer Email</option>
-                        <option value="footer_phone">Footer Phone</option>
-                        <option value="footer_location">Footer Location</option>
-                        <option value="footer_copyright">Footer Copyright</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="contentValue">Content</label>
-                    <textarea id="contentValue" rows="5" placeholder="Enter content here..."></textarea>
-                </div>
-                <button type="submit" class="upload-submit-btn">Save Content</button>
-                <div id="contentUploadStatus" class="upload-status"></div>
-            </form>
-        </div>
-    </div>
-
-    <!-- ===== UPLOAD PROJECT MODAL ===== -->
-    <div id="uploadProjectModal" class="upload-modal" style="display:none;">
-        <div class="upload-modal-content">
-            <div class="upload-modal-header">
-                <h2 id="modalTitle">Upload Project</h2>
-                <span class="close-upload-modal" onclick="closeProjectModal()">&times;</span>
-            </div>
-            <form id="projectForm" enctype="multipart/form-data">
-                <input type="hidden" id="editProjectId" value="">
-                <div class="form-group">
-                    <label for="projectTitle">Project Title *</label>
-                    <input type="text" id="projectTitle" placeholder="e.g., Portfolio Website" required>
-                </div>
-                <div class="form-group">
-                    <label for="projectDescription">Description *</label>
-                    <textarea id="projectDescription" rows="3" placeholder="Brief description of your project..." required></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="projectFile">Project Image / GIF / Architecture</label>
-                    <input type="file" id="projectFile" accept="image/*,image/gif,application/pdf">
-                    <small class="file-hint">Upload an image, GIF, or architecture diagram (PNG, JPG, GIF, PDF)</small>
-                </div>
-                <div class="form-group">
-                    <label for="projectTechnologies">Technologies (comma separated)</label>
-                    <input type="text" id="projectTechnologies" placeholder="e.g., Python, FastAPI, MongoDB">
-                </div>
-                <div class="form-group">
-                    <label for="projectGithub">GitHub Link</label>
-                    <input type="url" id="projectGithub" placeholder="https://github.com/username/repo">
-                </div>
-                <button type="submit" class="upload-submit-btn" id="submitProjectBtn">Upload Project</button>
-                <div id="projectUploadStatus" class="upload-status"></div>
-            </form>
-        </div>
-    </div>
-
-    <!-- ===== UPLOAD EDUCATION MODAL ===== -->
-    <div id="uploadEducationModal" class="upload-modal" style="display:none;">
-        <div class="upload-modal-content">
-            <div class="upload-modal-header">
-                <h2>Upload Education</h2>
-                <span class="close-upload-modal" onclick="closeEducationModal()">&times;</span>
-            </div>
-            <form id="educationForm">
-                <div class="form-group">
-                    <label for="eduInstitution">Institution Name *</label>
-                    <input type="text" id="eduInstitution" placeholder="e.g., Stanford University" required>
-                </div>
-                <div class="form-group">
-                    <label for="eduDegree">Degree / Program *</label>
-                    <input type="text" id="eduDegree" placeholder="e.g., MSc in Big Data Management" required>
-                </div>
-                <div class="form-group">
-                    <label for="eduStartYear">Start Year *</label>
-                    <input type="number" id="eduStartYear" placeholder="e.g., 2020" min="1990" max="2030" required>
-                </div>
-                <div class="form-group">
-                    <label for="eduEndYear">End Year *</label>
-                    <input type="number" id="eduEndYear" placeholder="e.g., 2022" min="1990" max="2030" required>
-                </div>
-                <div class="form-group">
-                    <label for="eduDescription">Description</label>
-                    <textarea id="eduDescription" rows="3" placeholder="Brief description of your education..."></textarea>
-                </div>
-                <button type="submit" class="upload-submit-btn">Upload Education</button>
-                <div id="eduUploadStatus" class="upload-status"></div>
-            </form>
         </div>
     </div>
 
     <!-- ===== HERO SECTION ===== -->
-    <section class="hero" id="hero">
-        <!-- Profile Photo (Left Side) -->
-        <div class="image-container">
-            {% if profile_photo %}
-                <img src="/file/{{ profile_photo }}" alt="Profile Photo" class="profile-photo">
-            {% else %}
-                <img src="static/image.jpeg" alt="Naveen Palla - IT Professional">
-            {% endif %}
-            
-            <!-- Upload button (visible only when admin panel is enabled) -->
-            <div class="profile-actions" id="profileActions" style="display:none;">
-                <button class="upload-profile-btn" onclick="openProfileUpload()">Upload Photo</button>
+    <section class="py-4 py-md-5">
+        <div class="container">
+            <div class="row align-items-center g-4">
+                <div class="col-md-4 text-center">
+                    <div class="position-relative d-inline-block">
+                        {% if profile_photo %}
+                            <img src="/file/{{ profile_photo }}" alt="Profile Photo" class="rounded-circle img-fluid" style="width: 200px; height: 200px; object-fit: cover; border: 4px solid #667eea;">
+                        {% else %}
+                            <img src="static/image.jpeg" alt="Naveen Palla" class="rounded-circle img-fluid" style="width: 200px; height: 200px; object-fit: cover; border: 4px solid #667eea;">
+                        {% endif %}
+                        
+                        <div class="position-absolute bottom-0 start-0 end-0 bg-dark bg-opacity-75 p-1 rounded-bottom" id="profileActions" style="display:none;">
+                            <button class="btn btn-primary btn-sm w-100" onclick="openProfileUpload()">Upload Photo</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-8">
+                    <h2 class="fw-bold">
+                        {{ content.get('hero_subtitle', 'IT Professional | MSc in Big Data Management & Analytics') }}
+                    </h2>
+                    <p class="text-muted lead">
+                        {{ content.get('hero_description', 'Data Techie and IT Professional with a Master\'s degree in Big Data Management & Analytics...') }}
+                    </p>
+                </div>
             </div>
-        </div>
-        
-        <!-- Description (Right Side) - ✅ DYNAMIC -->
-        <div class="description">
-            <h2 class="hero-subtitle">
-                {{ content.get('hero_subtitle', 'IT Professional | MSc in Big Data Management & Analytics') }}
-            </h2>
-            <p>
-                {{ content.get('hero_description', 'Data Techie and IT Professional with a Master\'s degree in Big Data Management & Analytics. Specializing in building scalable data pipelines, cloud-native architectures, and Full-Stack Development, I bridge the gap between raw data and business intelligence. Passionate about transforming complex data into actionable insights using Python, Spark, and modern cloud platforms.') }}
-            </p>
         </div>
     </section>
 
-    <!-- ===== UPLOAD PROFILE PHOTO MODAL ===== -->
-    <div id="uploadProfileModal" class="upload-modal" style="display:none;">
-        <div class="upload-modal-content">
-            <div class="upload-modal-header">
-                <h2>Upload Profile Photo</h2>
-                <span class="close-upload-modal" onclick="closeProfileModal()">&times;</span>
-            </div>
-            <form id="profilePhotoForm" enctype="multipart/form-data">
-                <div class="form-group">
-                    <label for="profilePhotoInput">Choose Photo</label>
-                    <input type="file" id="profilePhotoInput" accept="image/*" required>
-                    <small class="file-hint">Upload a profile picture (JPG, PNG, GIF, WEBP)</small>
-                </div>
-                <button type="submit" class="upload-submit-btn">Upload Photo</button>
-                <div id="profileUploadStatus" class="upload-status"></div>
-            </form>
-        </div>
-    </div>
-
     <!-- ===== MAIN CONTENT ===== -->
-    <section class="main-container">
-        <div class="projects-section" id="projects">
-            <div class="section-header">
-                <h2>Projects</h2>
-                <button class="add-btn" id="newProjectBtn" onclick="uploadProject()" style="display:none;">+ New Project</button>
-            </div>
-
-            {% if projects %}
-                <div class="projects-grid">
-                    {% for project in projects %}
-                        <div class="project-card"
-                            onclick="openProjectDetail(this)"
-                            data-project-id="{{ project.id }}"
-                            data-title="{{ project.title }}"
-                            data-description="{{ project.description }}"
-                            data-technologies="{{ project.technologies|join(',') if project.technologies else '' }}"
-                            data-github="{{ project.github_link or '' }}"
-                            data-file-id="{{ project.file_id or '' }}"
-                            data-file-type="{{ project.file_type or '' }}">
-
-                            {% if project.file_id %}
-                                {% if project.file_type == 'image' %}
-                                    <img src="/file/{{ project.file_id }}" alt="{{ project.title }}" class="project-image">
-                                {% elif project.file_type == 'gif' %}
-                                    <img src="/file/{{ project.file_id }}" alt="{{ project.title }} demo" class="project-gif">
-                                {% elif project.file_type == 'pdf' %}
-                                    <div class="project-pdf">
-                                        <span class="pdf-link">📄 Architecture Diagram</span>
-                                    </div>
-                                {% endif %}
-                            {% endif %}
-
-                            <h3>{{ project.title }}</h3>
-                            <p class="project-description">{{ project.description }}</p>
-
-                            <div class="project-actions" style="display:none;">
-                                <button class="edit-btn" onclick="event.stopPropagation(); editProject(this)">Edit</button>
-                                <button class="delete-btn" onclick="event.stopPropagation(); deleteProject('{{ project.id }}')">Delete</button>
+    <section class="py-3 py-md-4">
+        <div class="container">
+            <div class="row g-4">
+                <!-- Projects Section -->
+                <div class="col-lg-8">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4 class="card-title mb-0">Projects</h4>
+                                <button class="btn btn-primary btn-sm" id="newProjectBtn" onclick="uploadProject()" style="display:none;">+ New</button>
                             </div>
+                            
+                            {% if projects %}
+                                <div class="row g-3">
+                                    {% for project in projects %}
+                                        <div class="col-md-6">
+                                            <div class="card h-100 project-card" 
+                                                onclick="openProjectDetail(this)"
+                                                data-project-id="{{ project.id }}"
+                                                data-title="{{ project.title }}"
+                                                data-description="{{ project.description }}"
+                                                data-technologies="{{ project.technologies|join(',') if project.technologies else '' }}"
+                                                data-github="{{ project.github_link or '' }}"
+                                                data-file-id="{{ project.file_id or '' }}"
+                                                data-file-type="{{ project.file_type or '' }}"
+                                                style="cursor: pointer;">
+                                                <div class="card-body">
+                                                    {% if project.file_id %}
+                                                        {% if project.file_type == 'image' %}
+                                                            <img src="/file/{{ project.file_id }}" alt="{{ project.title }}" class="img-fluid rounded mb-2" style="height: 120px; width: 100%; object-fit: contain;">
+                                                        {% elif project.file_type == 'gif' %}
+                                                            <img src="/file/{{ project.file_id }}" alt="{{ project.title }}" class="img-fluid rounded mb-2" style="height: 120px; width: 100%; object-fit: contain;">
+                                                        {% elif project.file_type == 'pdf' %}
+                                                            <div class="bg-light p-2 rounded text-center mb-2">
+                                                                <a href="/file/{{ project.file_id }}" target="_blank" class="text-primary">View Diagram</a>
+                                                            </div>
+                                                        {% endif %}
+                                                    {% endif %}
+                                                    
+                                                    <h6 class="fw-bold">{{ project.title }}</h6>
+                                                    <p class="text-muted small">{{ project.description[:80] }}{% if project.description|length > 80 %}...{% endif %}</p>
+                                                    
+                                                    {% if project.technologies %}
+                                                        <div class="d-flex flex-wrap gap-1 mb-2">
+                                                            {% for tech in project.technologies %}
+                                                                <span class="badge bg-primary">{{ tech }}</span>
+                                                            {% endfor %}
+                                                        </div>
+                                                    {% endif %}
+                                                    
+                                                    {% if project.github_link %}
+                                                        <a href="{{ project.github_link }}" target="_blank" class="btn btn-outline-secondary btn-sm">GitHub</a>
+                                                    {% endif %}
+                                                </div>
+                                                
+                                                <div class="card-footer bg-transparent border-top project-actions" style="display:none;">
+                                                    <button class="btn btn-warning btn-sm" onclick="event.stopPropagation(); editProject(this)">Edit</button>
+                                                    <button class="btn btn-danger btn-sm" onclick="event.stopPropagation(); deleteProject('{{ project.id }}')">Delete</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <p class="text-muted text-center py-4">No projects added yet.</p>
+                            {% endif %}
                         </div>
-                    {% endfor %}
+                    </div>
                 </div>
-
-                <!-- ===== PROJECT DETAIL MODAL (expanded view) ===== -->
-                <div id="projectDetailModal" class="project-detail-modal">
-                    <div class="project-detail-content">
-                        <div class="project-detail-header">
-                            <h2 id="detailTitle"></h2>
-                            <span class="close-project-detail" onclick="closeProjectDetail()">&times;</span>
+                
+                <!-- Education Section -->
+                <div class="col-lg-4">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4 class="card-title mb-0">Education</h4>
+                                <button class="btn btn-success btn-sm" id="newEducationBtn" onclick="uploadEducation()" style="display:none;">+ New</button>
+                            </div>
+                            
+                            {% if education %}
+                                {% for edu in education %}
+                                    <div class="card border-start border-4 border-success mb-3">
+                                        <div class="card-body py-2">
+                                            <h6 class="fw-bold mb-0">{{ edu.degree }}</h6>
+                                            <p class="text-success small mb-0">{{ edu.institution }}</p>
+                                            <p class="text-muted small">{{ edu.start_year }} - {{ edu.end_year }}</p>
+                                            {% if edu.description %}
+                                                <p class="text-muted small mb-0">{{ edu.description }}</p>
+                                            {% endif %}
+                                        </div>
+                                        <div class="card-footer bg-transparent border-top education-actions" style="display:none;">
+                                            <button class="btn btn-danger btn-sm" onclick="deleteEducation('{{ edu.id }}')">Delete</button>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <p class="text-muted text-center py-4">No education added yet.</p>
+                            {% endif %}
                         </div>
-                        <div id="detailImageWrap"></div>
-                        <p class="project-detail-description" id="detailDescription"></p>
-                        <div class="project-tags" id="detailTags" style="display:flex;"></div>
-                        <div class="project-links" id="detailLinks" style="display:flex;"></div>
                     </div>
                 </div>
             </div>
-        {% else %}
-            <p class="empty-message">No projects added yet.</p>
-        {% endif %}
+        </div>
+    </section>
+
+    <!-- ===== PROJECT DETAIL MODAL ===== -->
+    <div id="projectDetailModal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="detailTitle"></h5>
+                    <button type="button" class="btn-close" onclick="closeProjectDetail()"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="detailImageWrap"></div>
+                    <p class="project-detail-description" id="detailDescription" style="white-space: pre-line;"></p>
+                    <div class="project-tags d-flex flex-wrap gap-1 mb-2" id="detailTags"></div>
+                    <div class="project-links d-flex gap-2" id="detailLinks"></div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="education-background" id="education">
-        <div class="section-header">
-            <h2>Education</h2>
-            <button class="add-btn" id="newEducationBtn" onclick="uploadEducation()" style="display:none;">+ New Education</button>
+    <!-- ===== UPLOAD MODALS ===== -->
+    <div id="uploadProjectModal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Upload Project</h5>
+                    <button type="button" class="btn-close" onclick="closeProjectModal()"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="projectForm" enctype="multipart/form-data">
+                        <input type="hidden" id="editProjectId" value="">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Project Title *</label>
+                            <input type="text" id="projectTitle" class="form-control" placeholder="e.g., Portfolio Website" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Description *</label>
+                            <textarea id="projectDescription" class="form-control" rows="3" placeholder="Brief description of your project..." required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Project Image / GIF / Architecture</label>
+                            <input type="file" id="projectFile" class="form-control" accept="image/*,image/gif,application/pdf">
+                            <small class="text-muted">Upload an image, GIF, or architecture diagram</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Technologies (comma separated)</label>
+                            <input type="text" id="projectTechnologies" class="form-control" placeholder="e.g., Python, FastAPI, MongoDB">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">GitHub Link</label>
+                            <input type="url" id="projectGithub" class="form-control" placeholder="https://github.com/username/repo">
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100" id="submitProjectBtn">Upload Project</button>
+                        <div id="projectUploadStatus" class="mt-2"></div>
+                    </form>
+                </div>
+            </div>
         </div>
-        
-        {% if education %}
-            {% for edu in education %}
-                <div class="education-card">
-                    <h3>{{ edu.degree }}</h3>
-                    <p class="institution">{{ edu.institution }}</p>
-                    <p class="year">{{ edu.start_year }} - {{ edu.end_year }}</p>
-                    {% if edu.description %}
-                        <p class="description">{{ edu.description }}</p>
-                    {% endif %}
-                    <div class="education-actions" style="display:none;">
-                        <button class="delete-btn" onclick="deleteEducation('{{ edu.id }}')">Delete</button>
+    </div>
+
+    <div id="uploadEducationModal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Upload Education</h5>
+                    <button type="button" class="btn-close" onclick="closeEducationModal()"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="educationForm">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Institution Name *</label>
+                            <input type="text" id="eduInstitution" class="form-control" placeholder="e.g., Stanford University" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Degree / Program *</label>
+                            <input type="text" id="eduDegree" class="form-control" placeholder="e.g., MSc in Big Data Management" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Start Year *</label>
+                            <input type="number" id="eduStartYear" class="form-control" placeholder="2020" min="1990" max="2030" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">End Year *</label>
+                            <input type="number" id="eduEndYear" class="form-control" placeholder="2022" min="1990" max="2030" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Description</label>
+                            <textarea id="eduDescription" class="form-control" rows="3" placeholder="Brief description of your education..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Upload Education</button>
+                        <div id="eduUploadStatus" class="mt-2"></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="uploadProfileModal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Upload Profile Photo</h5>
+                    <button type="button" class="btn-close" onclick="closeProfileModal()"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="profilePhotoForm" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Choose Photo</label>
+                            <input type="file" id="profilePhotoInput" class="form-control" accept="image/*" required>
+                            <small class="text-muted">Upload a profile picture (JPG, PNG, GIF, WEBP)</small>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100" id="profileSubmitBtn">Upload Photo</button>
+                        <div id="profileUploadStatus" class="upload-status mt-2"></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="bg-dark text-white py-4 mt-4">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <h5>{{ content.get('footer_name', 'Naveen Palla') }}</h5>
+                    <p class="text-secondary">{{ content.get('footer_title', 'IT Professional | MSc in Big Data Management & Analytics') }}</p>
+                </div>
+                <div class="col-md-4">
+                    <h6 class="text-uppercase text-secondary">Contact</h6>
+                    <p class="mb-1">Email: {{ content.get('footer_email', 'naveenpalla2000@gmail.com') }}</p>
+                    <p class="mb-1">Phone: {{ content.get('footer_phone', '+353 894898683') }}</p>
+                    <p class="mb-0">Location: {{ content.get('footer_location', 'Dublin, Ireland') }}</p>
+                </div>
+                <div class="col-md-4">
+                    <h6 class="text-uppercase text-secondary">Connect</h6>
+                    <div class="d-flex gap-2 flex-wrap">
+                        <a href="https://www.linkedin.com/in/pnaveen23/" target="_blank" class="btn btn-outline-secondary btn-sm">LinkedIn</a>
+                        <a href="https://github.com/PaNavar369" target="_blank" class="btn btn-outline-secondary btn-sm">GitHub</a>
                     </div>
                 </div>
-            {% endfor %}
-        {% else %}
-            <p class="empty-message">No education added yet.</p>
-        {% endif %}
-    </div>
-</section>
-
-<!-- ===== FOOTER ===== -->
-<footer class="footer" id="contact">
-    <div class="footer-content">
-        <div class="footer-section">
-            <h3>{{ content.get('footer_name', 'Naveen Palla') }}</h3>
-            <p class="footer-title">{{ content.get('footer_title', 'IT Professional | MSc in Big Data Management & Analytics') }}</p>
-        </div>
-        <div class="footer-section">
-            <h4>Contact</h4>
-            <div class="footer-contact">
-                <div class="contact-item">
-                    <span class="contact-icon">📧</span>
-                    <a href="mailto:{{ content.get('footer_email', 'naveenpalla2000@gmail.com') }}">
-                        {{ content.get('footer_email', 'naveenpalla2000@gmail.com') }}
-                    </a>
-                </div>
-                <div class="contact-item">
-                    <span class="contact-icon">📱</span>
-                    <a href="tel:{{ content.get('footer_phone', '+353894898683') }}">
-                        {{ content.get('footer_phone', '+353 894898683') }}
-                    </a>
-                </div>
-                <div class="contact-item">
-                    <span class="contact-icon">📍</span>
-                    <span>{{ content.get('footer_location', 'Dublin, Ireland') }}</span>
-                </div>
             </div>
+            <hr class="border-secondary">
+            <p class="text-center text-secondary small mb-0">{{ content.get('footer_copyright', '© 2024 Naveen Palla. All rights reserved.') }}</p>
         </div>
-        <div class="footer-section">
-            <h4>Connect</h4>
-            <div class="footer-social">
-                <a href="https://www.linkedin.com/in/pnaveen23/" target="_blank" class="social-link">LinkedIn</a>
-                <a href="https://github.com/PaNavar369" target="_blank" class="social-link">GitHub</a>
-            </div>
-        </div>
-    </div>
-    <div class="footer-bottom">
-        <p>{{ content.get('footer_copyright', '© 2024 Naveen Palla. All rights reserved.') }}</p>
-    </div>
-</footer>
+    </footer>
 
-<!-- ============================================================ -->
-<!-- JAVASCRIPT                                                    -->
-<!-- ============================================================ -->
-<script>
+    <!-- ============================================================ -->
+    <!-- JAVASCRIPT                                                    -->
+    <!-- ============================================================ -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
     // ============================================================ //
     // GLOBAL VARIABLES                                              //
     // ============================================================ //
     let editingProjectId = null;
+
+    // ============================================================ //
+    // CHECK LOGIN STATE ON PAGE LOAD                                //
+    // ============================================================ //
+    function checkLoginState() {
+        const isAdmin = sessionStorage.getItem('isAdmin');
+        
+        if (isAdmin === 'true') {
+            document.getElementById('adminPanel').style.display = 'block';
+            document.getElementById('newProjectBtn').style.display = 'inline-block';
+            document.getElementById('newEducationBtn').style.display = 'inline-block';
+            
+            document.querySelectorAll('.project-actions, .education-actions').forEach(function(el) {
+                el.style.display = 'flex';
+            });
+            
+            const profileActions = document.getElementById('profileActions');
+            if (profileActions) {
+                profileActions.style.display = 'flex';
+                profileActions.classList.add('show');
+            }
+        } else {
+            document.getElementById('adminPanel').style.display = 'none';
+            document.getElementById('newProjectBtn').style.display = 'none';
+            document.getElementById('newEducationBtn').style.display = 'none';
+            
+            document.querySelectorAll('.project-actions, .education-actions').forEach(function(el) {
+                el.style.display = 'none';
+            });
+            
+            const profileActions = document.getElementById('profileActions');
+            if (profileActions) {
+                profileActions.style.display = 'none';
+                profileActions.classList.remove('show');
+            }
+        }
+    }
 
     // ============================================================ //
     // PASSWORD MODAL FUNCTIONS                                     //
@@ -348,99 +434,30 @@
     
     function showPasswordModal() {
         if (sessionStorage.getItem('isAdmin') === 'true') {
-            document.getElementById('admin-panel').style.display = 'block';
-            showAdminButtons();
+            checkLoginState();
             return;
         }
         
-        document.getElementById('passwordModal').style.display = 'flex';
+        const modal = new bootstrap.Modal(document.getElementById('passwordModal'));
+        modal.show();
         document.getElementById('passwordInput').value = '';
         document.getElementById('passwordError').style.display = 'none';
-        document.getElementById('passwordInput').focus();
+        setTimeout(() => {
+            document.getElementById('passwordInput').focus();
+        }, 300);
     }
 
     function closePasswordModal() {
-        document.getElementById('passwordModal').style.display = 'none';
+        const modal = bootstrap.Modal.getInstance(document.getElementById('passwordModal'));
+        if (modal) modal.hide();
         document.getElementById('passwordError').style.display = 'none';
     }
-
-    window.addEventListener('click', function(e) {
-        const modal = document.getElementById('passwordModal');
-        if (e.target === modal) {
-            closePasswordModal();
-        }
-    });
-
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            closePasswordModal();
-        }
-    });
 
     document.getElementById('passwordInput').addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
             verifyPassword();
         }
     });
-
-    // ============================================================ //
-    // SHOW/HIDE ADMIN BUTTONS                                      //
-    // ============================================================ //
-    function showAdminButtons() {
-        // Show profile actions (upload photo)
-        const profileActions = document.getElementById('profileActions');
-        if (profileActions) {
-            profileActions.style.display = 'flex';
-            profileActions.classList.add('show');
-        }
-
-        // Show add buttons
-        const projectBtn = document.getElementById('newProjectBtn');
-        if (projectBtn) {
-            projectBtn.style.display = 'inline-block';
-            projectBtn.style.visibility = 'visible';
-        }
-        
-        const eduBtn = document.getElementById('newEducationBtn');
-        if (eduBtn) {
-            eduBtn.style.display = 'inline-block';
-            eduBtn.style.visibility = 'visible';
-        }
-        
-        // Show action buttons
-        document.querySelectorAll('.project-actions, .education-actions').forEach(function(el) {
-            el.style.display = 'flex';
-            el.style.visibility = 'visible';
-        });
-    }
-
-    function hideAdminButtons() {
-        // Hide profile actions
-        const profileActions = document.getElementById('profileActions');
-        if (profileActions) {
-            profileActions.style.display = 'none';
-            profileActions.classList.remove('show');
-        }
-
-        // Hide add buttons
-        const projectBtn = document.getElementById('newProjectBtn');
-        if (projectBtn) {
-            projectBtn.style.display = 'none';
-            projectBtn.style.visibility = 'hidden';
-        }
-        
-        const eduBtn = document.getElementById('newEducationBtn');
-        if (eduBtn) {
-            eduBtn.style.display = 'none';
-            eduBtn.style.visibility = 'hidden';
-        }
-        
-        // Hide action buttons
-        document.querySelectorAll('.project-actions, .education-actions').forEach(function(el) {
-            el.style.display = 'none';
-            el.style.visibility = 'hidden';
-        });
-    }
 
     // ============================================================ //
     // VERIFY PASSWORD                                               //
@@ -455,7 +472,7 @@
             return;
         }
 
-        const loginBtn = document.querySelector('.login-btn');
+        const loginBtn = document.querySelector('#passwordModal .btn-primary');
         loginBtn.disabled = true;
         loginBtn.textContent = 'Verifying...';
 
@@ -473,20 +490,12 @@
             if (data.success) {
                 sessionStorage.setItem('isAdmin', 'true');
                 closePasswordModal();
-                
-                document.getElementById('admin-panel').style.display = 'block';
-                showAdminButtons();
-                document.getElementById('adminBtn').textContent = 'Admin';
-                
+                checkLoginState();
             } else {
-                errorDiv.textContent = 'Sorry, you might not be the owner. Redirecting...';
+                errorDiv.textContent = 'Incorrect password. Please try again.';
                 errorDiv.style.display = 'block';
-                
-                document.getElementById('passwordInput').disabled = true;
-                
-                setTimeout(function() {
-                    window.location.href = '/';
-                }, 2000);
+                document.getElementById('passwordInput').value = '';
+                document.getElementById('passwordInput').focus();
             }
 
         } catch (error) {
@@ -500,53 +509,33 @@
     }
 
     // ============================================================ //
-    // CHECK LOGIN STATE ON PAGE LOAD                                //
-    // ============================================================ //
-    window.addEventListener("DOMContentLoaded", function() {
-        console.log('Page loaded');
-        const isAdmin = sessionStorage.getItem('isAdmin');
-        console.log('isAdmin from sessionStorage:', isAdmin);
-
-        if (isAdmin === 'true') {
-            document.getElementById('admin-panel').style.display = 'block';
-            showAdminButtons();
-            console.log('✅ Admin panel shown');
-        } else {
-            document.getElementById('admin-panel').style.display = 'none';
-            hideAdminButtons();
-            console.log('❌ Admin panel hidden');
-        }
-    });
-
-    // ============================================================ //
     // LOGOUT                                                        //
     // ============================================================ //
     function logout() {
-        console.log('Logging out...');
-        document.getElementById('admin-panel').style.display = 'none';
-        document.getElementById('adminBtn').textContent = 'Admin';
         sessionStorage.removeItem('isAdmin');
-        
-        hideAdminButtons();
-        
+        checkLoginState();
         window.location.href = '/';
     }
 
     // ============================================================ //
+    // RUN ON PAGE LOAD                                              //
+    // ============================================================ //
+    document.addEventListener('DOMContentLoaded', function() {
+        checkLoginState();
+    });
+
+    // ============================================================ //
     // CONTENT EDITOR FUNCTIONS                                     //
     // ============================================================ //
-    
     function openContentEditor() {
-        console.log("Opening content editor");
-        
         document.getElementById('contentForm').reset();
         document.getElementById('contentUploadStatus').className = 'upload-status';
         document.getElementById('contentUploadStatus').textContent = '';
         document.getElementById('contentUploadStatus').style.display = 'none';
         
-        document.getElementById('contentEditorModal').style.display = 'flex';
+        const modal = new bootstrap.Modal(document.getElementById('contentEditorModal'));
+        modal.show();
         
-        // Load content for the first option
         const keyField = document.getElementById('contentKey');
         if (keyField) {
             setTimeout(() => {
@@ -556,10 +545,10 @@
     }
 
     function closeContentEditor() {
-        document.getElementById('contentEditorModal').style.display = 'none';
+        const modal = bootstrap.Modal.getInstance(document.getElementById('contentEditorModal'));
+        if (modal) modal.hide();
     }
 
-    // Load content when section changes
     document.getElementById('contentKey').addEventListener('change', async function() {
         const key = this.value;
         const valueField = document.getElementById('contentValue');
@@ -578,7 +567,6 @@
         }
     });
 
-    // Handle content form submission
     document.addEventListener('DOMContentLoaded', function() {
         const contentForm = document.getElementById("contentForm");
         const statusDiv = document.getElementById("contentUploadStatus");
@@ -587,7 +575,7 @@
             contentForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
 
-                const submitBtn = this.querySelector('.upload-submit-btn');
+                const submitBtn = this.querySelector('.btn-primary');
                 submitBtn.disabled = true;
                 submitBtn.textContent = 'Saving...';
 
@@ -650,25 +638,8 @@
         }
     });
 
-    // Close content editor on outside click
-    window.addEventListener('click', function(e) {
-        const modal = document.getElementById('contentEditorModal');
-        if (e.target === modal) {
-            closeContentEditor();
-        }
-    });
-
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            const modal = document.getElementById('contentEditorModal');
-            if (modal && modal.style.display === 'flex') {
-                closeContentEditor();
-            }
-        }
-    });
-
     // ============================================================ //
-    // PROJECT FUNCTIONS                                             //
+    // ADD BUTTON FUNCTIONS                                          //
     // ============================================================ //
     
     function uploadProject() {
@@ -698,79 +669,79 @@
             statusDiv.style.display = 'none';
         }
         
-        const modal = document.getElementById('uploadProjectModal');
-        if (modal) {
-            modal.style.display = 'flex';
-            console.log('Project modal shown');
-        }
+        const modal = new bootstrap.Modal(document.getElementById('uploadProjectModal'));
+        modal.show();
     }
 
     function closeProjectModal() {
-        const modal = document.getElementById('uploadProjectModal');
-        if (modal) {
-            modal.style.display = 'none';
-            console.log('Project modal closed');
-        }
+        const modal = bootstrap.Modal.getInstance(document.getElementById('uploadProjectModal'));
+        if (modal) modal.hide();
         editingProjectId = null;
         document.getElementById('editProjectId').value = '';
     }
 
-    // ============================================================ //
-    // EDIT PROJECT                                                  //
-    // ============================================================ //
-    function editProject(btn) {
-        console.log("Edit button clicked");
+    function uploadEducation() {
+        console.log("Upload Education clicked");
         
-        let card = btn.closest('.project-card');
-        if (!card) {
-            console.error("No project card found");
-            return;
+        const form = document.getElementById("educationForm");
+        if (form) {
+            form.reset();
         }
         
-        const projectId = card.dataset.projectId;
-        if (!projectId) {
-            console.error("No project ID found");
-            alert("Error: Could not identify project to edit");
-            return;
-        }
-        
-        editingProjectId = projectId;
-        document.getElementById('editProjectId').value = projectId;
-        console.log("Editing project ID:", editingProjectId);
-        
-        const title = card.dataset.title || '';
-        const description = card.dataset.description || '';
-        const technologies = card.dataset.technologies || '';
-        const github = card.dataset.github || '';
-        
-        document.getElementById('projectTitle').value = title;
-        document.getElementById('projectDescription').value = description;
-        document.getElementById('projectTechnologies').value = technologies;
-        document.getElementById('projectGithub').value = github;
-        
-        document.getElementById('projectFile').required = false;
-        
-        document.getElementById('modalTitle').textContent = 'Edit Project';
-        document.getElementById('submitProjectBtn').textContent = 'Save Changes';
-        
-        const statusDiv = document.getElementById("projectUploadStatus");
+        const statusDiv = document.getElementById("eduUploadStatus");
         if (statusDiv) {
             statusDiv.className = 'upload-status';
             statusDiv.textContent = '';
             statusDiv.style.display = 'none';
         }
         
-        document.getElementById('uploadProjectModal').style.display = 'flex';
-        console.log('Edit modal opened for project:', editingProjectId);
+        const modal = new bootstrap.Modal(document.getElementById('uploadEducationModal'));
+        modal.show();
+    }
+
+    function closeEducationModal() {
+        const modal = bootstrap.Modal.getInstance(document.getElementById('uploadEducationModal'));
+        if (modal) modal.hide();
     }
 
     // ============================================================ //
-    // DELETE PROJECT                                                //
+    // PROJECT FUNCTIONS                                             //
     // ============================================================ //
+    function editProject(btn) {
+        let card = btn.closest('.project-card');
+        if (!card) {
+            alert("Error: Could not identify project to edit");
+            return;
+        }
+        
+        const projectId = card.dataset.projectId;
+        if (!projectId) {
+            alert("Error: Could not identify project to edit");
+            return;
+        }
+        
+        editingProjectId = projectId;
+        document.getElementById('editProjectId').value = projectId;
+        
+        document.getElementById('projectTitle').value = card.dataset.title || '';
+        document.getElementById('projectDescription').value = card.dataset.description || '';
+        document.getElementById('projectTechnologies').value = card.dataset.technologies || '';
+        document.getElementById('projectGithub').value = card.dataset.github || '';
+        
+        document.getElementById('projectFile').required = false;
+        document.getElementById('modalTitle').textContent = 'Edit Project';
+        document.getElementById('submitProjectBtn').textContent = 'Save Changes';
+        
+        document.getElementById('projectUploadStatus').className = 'upload-status';
+        document.getElementById('projectUploadStatus').textContent = '';
+        document.getElementById('projectUploadStatus').style.display = 'none';
+        
+        const modal = new bootstrap.Modal(document.getElementById('uploadProjectModal'));
+        modal.show();
+    }
+
     function deleteProject(id) {
         if (confirm('Are you sure you want to delete this project?')) {
-            console.log('Deleting project:', id);
-            
             fetch('/delete-project/' + id, {
                 method: 'DELETE'
             })
@@ -797,9 +768,6 @@
         }
     }
 
-    // ============================================================ //
-    // PROJECT FORM SUBMISSION                                       //
-    // ============================================================ //
     document.addEventListener('DOMContentLoaded', function() {
         const projectForm = document.getElementById("projectForm");
         const statusDiv = document.getElementById("projectUploadStatus");
@@ -896,199 +864,6 @@
         }
     });
 
-    // ============================================================ //
-    // CLOSE PROJECT MODAL ON OUTSIDE CLICK & ESC                   //
-    // ============================================================ //
-    window.addEventListener('click', function(e) {
-        const projectModal = document.getElementById('uploadProjectModal');
-        if (e.target === projectModal) {
-            closeProjectModal();
-        }
-    });
-
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            const projectModal = document.getElementById('uploadProjectModal');
-            if (projectModal && projectModal.style.display === 'flex') {
-                closeProjectModal();
-            }
-        }
-    });
-
-    // ============================================================ //
-    // PROFILE PHOTO FUNCTIONS                                      //
-    // ============================================================ //
-    function openProfileUpload() {
-        document.getElementById('profilePhotoForm').reset();
-        document.getElementById('profileUploadStatus').className = 'upload-status';
-        document.getElementById('profileUploadStatus').textContent = '';
-        document.getElementById('profileUploadStatus').style.display = 'none';
-        document.getElementById('uploadProfileModal').style.display = 'flex';
-    }
-
-    function closeProfileModal() {
-        document.getElementById('uploadProfileModal').style.display = 'none';
-    }
-
-    // ============================================================ //
-    // PROFILE PHOTO FORM SUBMISSION                                 //
-    // ============================================================ //
-    document.addEventListener('DOMContentLoaded', function() {
-        const profileForm = document.getElementById("profilePhotoForm");
-        const statusDiv = document.getElementById("profileUploadStatus");
-
-        if (profileForm) {
-            profileForm.addEventListener('submit', async function(e) {
-                e.preventDefault();
-
-                const submitBtn = this.querySelector('.upload-submit-btn');
-                submitBtn.disabled = true;
-                submitBtn.textContent = 'Uploading...';
-
-                statusDiv.className = 'upload-status';
-                statusDiv.textContent = '';
-                statusDiv.style.display = 'none';
-
-                const fileInput = document.getElementById('profilePhotoInput');
-                
-                if (!fileInput.files || fileInput.files.length === 0) {
-                    statusDiv.className = 'upload-status error';
-                    statusDiv.textContent = 'Please select a photo.';
-                    statusDiv.style.display = 'block';
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = 'Upload Photo';
-                    return;
-                }
-
-                const file = fileInput.files[0];
-                if (file.size > 5 * 1024 * 1024) {
-                    statusDiv.className = 'upload-status error';
-                    statusDiv.textContent = 'File size must be less than 5MB.';
-                    statusDiv.style.display = 'block';
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = 'Upload Photo';
-                    return;
-                }
-
-                const formData = new FormData();
-                formData.append('file', file);
-
-                try {
-                    const response = await fetch('/upload-profile-photo', {
-                        method: 'POST',
-                        body: formData
-                    });
-
-                    const data = await response.json();
-
-                    if (data.success) {
-                        statusDiv.className = 'upload-status success';
-                        statusDiv.textContent = data.message;
-                        statusDiv.style.display = 'block';
-
-                        setTimeout(() => {
-                            profileForm.reset();
-                            statusDiv.textContent = '';
-                            statusDiv.style.display = 'none';
-                            closeProfileModal();
-                            window.location.reload();
-                        }, 1500);
-
-                    } else {
-                        statusDiv.className = 'upload-status error';
-                        statusDiv.textContent = data.message || 'Upload failed';
-                        statusDiv.style.display = 'block';
-                    }
-
-                } catch (error) {
-                    console.error('Upload error:', error);
-                    statusDiv.className = 'upload-status error';
-                    statusDiv.textContent = 'Network error: ' + error.message;
-                    statusDiv.style.display = 'block';
-                } finally {
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = 'Upload Photo';
-                }
-            });
-        }
-    });
-
-    // ============================================================ //
-    // OTHER ADMIN FUNCTIONS                                         //
-    // ============================================================ //
-    function uploadCertificate() {
-        alert('Upload Certificate - Coming soon!');
-    }
-
-    function uploadEducation() {
-        console.log("Upload Education clicked");
-
-        const form = document.getElementById("educationForm");
-        if (form) {
-            form.reset();
-        }
-
-        const statusDiv = document.getElementById("eduUploadStatus");
-        if (statusDiv) {
-            statusDiv.className = 'upload-status';
-            statusDiv.textContent = '';
-            statusDiv.style.display = 'none';
-        }
-
-        const modal = document.getElementById('uploadEducationModal');
-        if (modal) {
-            modal.style.display = 'flex';
-            console.log('Education modal shown');
-        }
-    }
-
-    function closeEducationModal() {
-        const modal = document.getElementById('uploadEducationModal');
-        if (modal) {
-            modal.style.display = 'none';
-            console.log('Education modal closed');
-        }
-    }
-
-    function deleteEducation(id) {
-        if (confirm('Are you sure you want to delete this education entry?')) {
-            fetch('/delete-education/' + id, {
-                method: 'DELETE'
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Education deleted successfully!');
-                    window.location.reload();
-                } else {
-                    alert('Error: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Network error. Please try again.');
-            });
-        }
-    }
-
-    // Close education modal on outside click and ESC
-    window.addEventListener('click', function(e) {
-        const eduModal = document.getElementById('uploadEducationModal');
-        if (e.target === eduModal) {
-            closeEducationModal();
-        }
-    });
-
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            const eduModal = document.getElementById('uploadEducationModal');
-            if (eduModal && eduModal.style.display === 'flex') {
-                closeEducationModal();
-            }
-        }
-    });
-
-    // Handle education form submission
     document.addEventListener('DOMContentLoaded', function() {
         const educationForm = document.getElementById("educationForm");
         const statusDiv = document.getElementById("eduUploadStatus");
@@ -1097,7 +872,7 @@
             educationForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
 
-                const submitBtn = this.querySelector('.upload-submit-btn');
+                const submitBtn = this.querySelector('.btn-primary');
                 submitBtn.disabled = true;
                 submitBtn.textContent = 'Uploading...';
 
@@ -1168,6 +943,175 @@
     });
 
     // ============================================================ //
+    // PROFILE PHOTO FUNCTIONS                                      //
+    // ============================================================ //
+    function openProfileUpload() {
+        console.log("Opening profile upload modal");
+        
+        const form = document.getElementById('profilePhotoForm');
+        if (form) {
+            form.reset();
+        }
+        
+        const statusDiv = document.getElementById('profileUploadStatus');
+        if (statusDiv) {
+            statusDiv.className = 'upload-status';
+            statusDiv.textContent = '';
+            statusDiv.style.display = 'none';
+        }
+        
+        const modalElement = document.getElementById('uploadProfileModal');
+        if (modalElement) {
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show();
+        }
+    }
+
+    function closeProfileModal() {
+        const modalElement = document.getElementById('uploadProfileModal');
+        if (modalElement) {
+            const modal = bootstrap.Modal.getInstance(modalElement);
+            if (modal) {
+                modal.hide();
+            }
+        }
+    }
+
+    // ✅ Profile photo form submission
+    document.addEventListener('DOMContentLoaded', function() {
+        const profileForm = document.getElementById("profilePhotoForm");
+        const statusDiv = document.getElementById("profileUploadStatus");
+
+        if (profileForm) {
+            profileForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                const submitBtn = document.getElementById('profileSubmitBtn');
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Uploading...';
+
+                statusDiv.className = 'upload-status';
+                statusDiv.textContent = '';
+                statusDiv.style.display = 'none';
+
+                const fileInput = document.getElementById('profilePhotoInput');
+                
+                if (!fileInput.files || fileInput.files.length === 0) {
+                    statusDiv.className = 'upload-status error';
+                    statusDiv.textContent = 'Please select a photo.';
+                    statusDiv.style.display = 'block';
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Upload Photo';
+                    return;
+                }
+
+                const file = fileInput.files[0];
+                
+                if (file.size > 5 * 1024 * 1024) {
+                    statusDiv.className = 'upload-status error';
+                    statusDiv.textContent = 'File size must be less than 5MB.';
+                    statusDiv.style.display = 'block';
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Upload Photo';
+                    return;
+                }
+
+                const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+                if (!allowedTypes.includes(file.type)) {
+                    statusDiv.className = 'upload-status error';
+                    statusDiv.textContent = 'Please upload a valid image (JPG, PNG, GIF, WEBP).';
+                    statusDiv.style.display = 'block';
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Upload Photo';
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('file', file);
+
+                try {
+                    console.log('Uploading profile photo...');
+                    const response = await fetch('/upload-profile-photo', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const data = await response.json();
+                    console.log('Upload response:', data);
+
+                    if (data.success) {
+                        statusDiv.className = 'upload-status success';
+                        statusDiv.textContent = data.message || 'Profile photo uploaded successfully!';
+                        statusDiv.style.display = 'block';
+
+                        setTimeout(() => {
+                            closeProfileModal();
+                            window.location.reload();
+                        }, 1500);
+
+                    } else {
+                        statusDiv.className = 'upload-status error';
+                        statusDiv.textContent = data.message || 'Upload failed. Please try again.';
+                        statusDiv.style.display = 'block';
+                    }
+
+                } catch (error) {
+                    console.error('Upload error:', error);
+                    statusDiv.className = 'upload-status error';
+                    statusDiv.textContent = 'Network error. Please try again.';
+                    statusDiv.style.display = 'block';
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Upload Photo';
+                }
+            });
+        }
+    });
+
+    // Close modal on outside click
+    document.addEventListener('DOMContentLoaded', function() {
+        const modalElement = document.getElementById('uploadProfileModal');
+        if (modalElement) {
+            modalElement.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeProfileModal();
+                }
+            });
+        }
+    });
+
+    // Close modal on ESC key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const modalElement = document.getElementById('uploadProfileModal');
+            if (modalElement && modalElement.style.display !== 'none') {
+                closeProfileModal();
+            }
+        }
+    });
+
+    function deleteEducation(id) {
+        if (confirm('Are you sure you want to delete this education entry?')) {
+            fetch('/delete-education/' + id, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Education deleted successfully!');
+                    window.location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Network error. Please try again.');
+            });
+        }
+    }
+
+    // ============================================================ //
     // PROJECT DETAIL MODAL                                          //
     // ============================================================ //
     function openProjectDetail(card) {
@@ -1187,10 +1131,11 @@
             const img = document.createElement('img');
             img.src = '/file/' + fileId;
             img.alt = title;
-            img.className = 'project-detail-image';
+            img.className = 'img-fluid rounded';
+            img.style.maxHeight = '350px';
             imgWrap.appendChild(img);
         } else if (fileId && fileType === 'pdf') {
-            imgWrap.innerHTML = '<div class="project-pdf"><a href="/file/' + fileId + '" target="_blank" class="pdf-link">View Architecture Diagram (PDF)</a></div>';
+            imgWrap.innerHTML = '<div class="bg-light p-3 rounded text-center"><a href="/file/' + fileId + '" target="_blank" class="btn btn-primary">View Architecture Diagram (PDF)</a></div>';
         }
 
         const tagsDiv = document.getElementById('detailTags');
@@ -1198,7 +1143,7 @@
         if (technologies) {
             technologies.split(',').map(t => t.trim()).filter(Boolean).forEach(tech => {
                 const span = document.createElement('span');
-                span.className = 'project-tag';
+                span.className = 'badge bg-primary me-1';
                 span.textContent = tech;
                 tagsDiv.appendChild(span);
             });
@@ -1210,45 +1155,21 @@
             const a = document.createElement('a');
             a.href = github;
             a.target = '_blank';
-            a.className = 'project-link';
+            a.className = 'btn btn-outline-secondary btn-sm';
             a.textContent = 'GitHub';
             linksDiv.appendChild(a);
         }
 
-        document.getElementById('projectDetailModal').classList.add('show');
+        const modal = new bootstrap.Modal(document.getElementById('projectDetailModal'));
+        modal.show();
     }
 
     function closeProjectDetail() {
-        document.getElementById('projectDetailModal').classList.remove('show');
+        const modal = bootstrap.Modal.getInstance(document.getElementById('projectDetailModal'));
+        if (modal) modal.hide();
     }
 
-    window.addEventListener('click', function(e) {
-        const modal = document.getElementById('projectDetailModal');
-        if (e.target === modal) closeProjectDetail();
-    });
-
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') closeProjectDetail();
-    });
-
-    // Close profile modal on outside click
-    window.addEventListener('click', function(e) {
-        const modal = document.getElementById('uploadProfileModal');
-        if (e.target === modal) {
-            closeProfileModal();
-        }
-    });
-
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            const modal = document.getElementById('uploadProfileModal');
-            if (modal && modal.style.display === 'flex') {
-                closeProfileModal();
-            }
-        }
-    });
-
     console.log('Portfolio JavaScript loaded');
-</script>
+    </script>
 </body>
 </html>
