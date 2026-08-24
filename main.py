@@ -83,7 +83,40 @@ def create_password():
 # create_password()
 
 # ============================================================ #
-# HOME PAGE                                                     #
+# ✅ SEED DEFAULT CONTENT (MUST BE CALLED)                      #
+# ============================================================ #
+def seed_default_content():
+    """Insert default content if it doesn't exist"""
+    default_content = {
+        "hero_title": "Hi, I'm Naveen Palla",
+        "hero_subtitle": "IT Professional | MSc in Big Data Management & Analytics",
+        "hero_description": "Data Techie and IT Professional with a Master's degree in Big Data Management & Analytics. Specializing in building scalable data pipelines, cloud-native architectures, and Full-Stack Development, I bridge the gap between raw data and business intelligence. Passionate about transforming complex data into actionable insights using Python, Spark, and modern cloud platforms.",
+        "footer_name": "Naveen Palla",
+        "footer_title": "IT Professional | MSc in Big Data Management & Analytics",
+        "footer_email": "naveenpalla2000@gmail.com",
+        "footer_phone": "+353 894898683",
+        "footer_location": "Dublin, Ireland",
+        "footer_copyright": "© 2024 Naveen Palla. All rights reserved."
+    }
+    
+    for key, value in default_content.items():
+        existing = content_collection.find_one({"key": key})
+        if not existing:
+            content_collection.insert_one({
+                "key": key,
+                "value": value,
+                "created_at": datetime.utcnow(),
+                "updated_at": datetime.utcnow()
+            })
+            print(f"✅ Seeded default content: {key}")
+        else:
+            print(f"⚠️ Content already exists: {key}")
+
+# ✅ ✅ ✅ CALL THIS FUNCTION ON STARTUP ✅ ✅ ✅
+seed_default_content()
+
+# ============================================================ #
+# GET ALL CONTENT                                               #
 # ============================================================ #
 def get_all_content():
     """Fetch all content from database"""
@@ -97,7 +130,7 @@ def get_all_content():
     except Exception as e:
         print(f"Error fetching content: {e}")
         return {}
-    
+
 @app.get("/get-content/{key}")
 async def get_content(key: str):
     """Get content from database by key"""
@@ -137,6 +170,7 @@ async def get_content(key: str):
                 "message": f"Error fetching content: {str(e)}"
             }
         )
+
 @app.post("/update-content")
 async def update_content(
     key: str = Form(...),
@@ -153,13 +187,11 @@ async def update_content(
         )
     
     try:
-        # ✅ Delete existing content if it exists
         existing = content_collection.find_one({"key": key})
         if existing:
             content_collection.delete_one({"key": key})
             print(f"🗑️ Deleted existing content: {key}")
         
-        # ✅ Insert new content
         content_collection.insert_one({
             "key": key,
             "value": value,
@@ -188,37 +220,13 @@ async def update_content(
         )
 
 # ============================================================ #
-# SEED DEFAULT CONTENT                                          #
+# HOME PAGE                                                     #
 # ============================================================ #
-def seed_default_content():
-    """Insert default content if it doesn't exist"""
-    default_content = {
-        "hero_title": "Hi, I'm Naveen Palla",
-        "hero_subtitle": "IT Professional | MSc in Big Data Management & Analytics",
-        "hero_description": "Data Techie and IT Professional with a Master's degree in Big Data Management & Analytics. Specializing in building scalable data pipelines, cloud-native architectures, and Full-Stack Development, I bridge the gap between raw data and business intelligence. Passionate about transforming complex data into actionable insights using Python, Spark, and modern cloud platforms.",
-        "footer_name": "Naveen Palla",
-        "footer_title": "IT Professional | MSc in Big Data Management & Analytics",
-        "footer_email": "naveenpalla2000@gmail.com",
-        "footer_phone": "+353 894898683",
-        "footer_location": "Dublin, Ireland",
-        "footer_copyright": "© 2024 Naveen Palla. All rights reserved."
-    }
-    
-    for key, value in default_content.items():
-        existing = content_collection.find_one({"key": key})
-        if not existing:
-            content_collection.insert_one({
-                "key": key,
-                "value": value,
-                "created_at": datetime.utcnow(),
-                "updated_at": datetime.utcnow()
-            })
-            print(f"✅ Seeded default content: {key}")
 @app.get("/", response_class=HTMLResponse)
 async def root(request: Request):
     print("route hit")
     
-    # Fetch education from database for Jinja2 rendering
+    # Fetch education from database
     education_list = []
     if education_collection is not None:
         education_cursor = education_collection.find().sort("end_year", -1)
@@ -250,13 +258,19 @@ async def root(request: Request):
                 "github_link": project.get("github_link", ""),
                 "created_at": project.get("created_at", datetime.utcnow()).isoformat()
             })
+    
+    # ✅ Fetch content from database
     content = get_all_content()
-    # ✅ Fetch profile photo from database
+    
+    # ✅ Debug print
+    print(f"📝 Content keys: {list(content.keys())}")
+    print(f"📝 hero_description: {content.get('hero_description', 'NOT FOUND')[:50]}...")
+    
+    # Fetch profile photo
     profile_photo = None
     profile = profile_collection.find_one({"type": "profile_photo"})
     if profile and profile.get("file_id"):
         profile_photo = profile["file_id"]
-     
     
     print("im here")
     return templates.TemplateResponse("portfolio.html", {
@@ -343,10 +357,8 @@ async def upload_profile_photo(file: UploadFile = File(...)):
             )
         contents = await file.read()
         
-        # Delete existing profile photo
         existing_profile = profile_collection.find_one({"type": "profile_photo"})
         
-        # Delete old file from GridFS if it exists
         if existing_profile and existing_profile.get("file_id"):
             try:
                 fs.delete(ObjectId(existing_profile["file_id"]))
@@ -354,7 +366,6 @@ async def upload_profile_photo(file: UploadFile = File(...)):
             except Exception as e:
                 print(f"⚠️ Could not delete old photo: {e}")
         
-        # Save new file
         file_id = fs.put(
             contents,
             filename=file.filename,
@@ -362,7 +373,6 @@ async def upload_profile_photo(file: UploadFile = File(...)):
             uploaded_at=datetime.utcnow()
         )
         
-        # Update or insert record
         if existing_profile:
             profile_collection.update_one(
                 {"type": "profile_photo"},
@@ -795,7 +805,7 @@ async def get_file(file_id: str):
         )
 
 # ============================================================ #
-# DELETE PROJECT (FIXED)                                        #
+# DELETE PROJECT                                                #
 # ============================================================ #
 @app.delete("/delete-project/{project_id}")
 async def delete_project(project_id: str):
@@ -820,7 +830,6 @@ async def delete_project(project_id: str):
                 }
             )
         
-        # ✅ FIXED: Delete from GridFS using file_id
         if project.get("file_id"):
             try:
                 fs.delete(ObjectId(project["file_id"]))
@@ -828,7 +837,6 @@ async def delete_project(project_id: str):
             except Exception as e:
                 print(f"⚠️ Could not delete file: {e}")
         
-        # Delete from MongoDB
         result = projects_collection.delete_one({"_id": ObjectId(project_id)})
         if result.deleted_count > 0:
             print(f"✅ Deleted project with ID: {project_id}")
@@ -902,3 +910,4 @@ async def get_projects():
                 "projects": []
             }
         )
+
